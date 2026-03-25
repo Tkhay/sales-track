@@ -7,7 +7,6 @@ SHEET_ID = "1vkO6nqSnQROCJqvJaYP2hi-5-zFR4T6iqPE6es_DRyg"
 SHEET_NAME = "Sheet%201" 
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
 
-# Official MOBA Item & Price Database
 ITEM_DATA = {
     "MOBA Cloth (Funeral - R&B)": 80.0, 
     "MOBA Cloth (Ceremonial)": 80.0,
@@ -23,7 +22,7 @@ ITEM_DATA = {
     "Mfantsipim T-Shirt (Ash)": 150.0,
     "Mfantsipim T-Shirt (White)": 150.0, 
     "Mfantsipim T-Shirt (Red)": 150.0,
-    "Mfantsipim Mug": 80.0,  # Added as requested
+    "Mfantsipim Mug": 80.0,
 }
 
 st.set_page_config(page_title="MOBA Sales Tracker", layout="wide", page_icon="🎓")
@@ -37,7 +36,6 @@ def load_data():
 
 st.title("📊 MOBA Sales Ledger")
 
-# Display current data
 df = load_data()
 if not df.empty:
     st.dataframe(df.dropna(how="all").dropna(axis=1, how="all"), width='stretch', hide_index=True)
@@ -46,7 +44,6 @@ if not df.empty:
 with st.sidebar:
     st.header("📝 Log New Sale")
     
-    # 1. Basic Info
     date = st.date_input("Sales Date", datetime.now())
     buyer = st.text_input("Buyer Name (Optional)")
     year = st.number_input("Year (Optional)", value=0, step=1)
@@ -54,7 +51,6 @@ with st.sidebar:
     
     st.divider()
     
-    # Cart logic
     if 'cart' not in st.session_state:
         st.session_state.cart = []
 
@@ -72,7 +68,6 @@ with st.sidebar:
             "price": ITEM_DATA[item_to_add] * qty_to_add
         })
 
-    # 2. Display Cart & Removal Option
     if st.session_state.cart:
         st.write("---")
         total_price = 0
@@ -99,19 +94,16 @@ with st.sidebar:
             disp_year = year if year > 0 else ""
             disp_buyer = buyer if buyer else "-"
             disp_contact = contact if contact else "-"
-            
-            # DATE FORMAT: DD/MM/YYYY
             formatted_date = date.strftime('%d/%m/%Y')
             
-            # Row Format: Date, Buyer, Year, Contact, Item, Price, Qty, Total, Mode
+            # Format exactly for pasting
             entry_string = f"{formatted_date},{disp_buyer},{disp_year},{disp_contact},\"{items_combined}\",,,{total_price},{mode}"
             
-            st.subheader("Copy & Paste this row:")
-            st.code(entry_string)
+            st.subheader("Copy this row:")
+            st.code(entry_string, language="text")
             
-        if st.button("Clear All", type="secondary"):
-            st.session_state.cart.reset()
-            st.session_state.cart = []
+        if st.button("Clear All Items", type="secondary"):
+            st.session_state.cart = [] # Fixed the .reset() bug
             st.rerun()
     else:
         st.info("Your cart is empty.")
