@@ -7,14 +7,23 @@ SHEET_ID = "1vkO6nqSnQROCJqvJaYP2hi-5-zFR4T6iqPE6es_DRyg"
 SHEET_NAME = "Sheet%201" 
 URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
 
+# Official MOBA Item & Price Database
 ITEM_DATA = {
-    "MOBA Cloth (Funeral - R&B)": 80.0, "MOBA Cloth (Ceremonial)": 80.0,
-    "MOBA Cloth (General)": 80.0, "MOBA Cloth (Funeral - W&B)": 80.0,
-    "MOBA Tie": 200.0, "MOBA Sticker (RECT-LONG)": 50.0,
-    "Mfantsipim Sticker (SQ-SMALL)": 30.0, "Mfantsipim Sticker (SQ-BIG)": 50.0,
-    "MFANTSIPIM Pennant": 100.0, "MFANTSIPIM CUFFLINKS": 150.0,
-    "MFANTSIPIM PIN/LAPEL": 50.0, "Mfantsipim T-Shirt (Ash)": 150.0,
-    "Mfantsipim T-Shirt (White)": 150.0, "Mfantsipim T-Shirt (Red)": 150.0,
+    "MOBA Cloth (Funeral - R&B)": 80.0, 
+    "MOBA Cloth (Ceremonial)": 80.0,
+    "MOBA Cloth (General)": 80.0, 
+    "MOBA Cloth (Funeral - W&B)": 80.0,
+    "MOBA Tie": 200.0, 
+    "MOBA Sticker (RECT-LONG)": 50.0,
+    "Mfantsipim Sticker (SQ-SMALL)": 30.0, 
+    "Mfantsipim Sticker (SQ-BIG)": 50.0,
+    "MFANTSIPIM Pennant": 100.0, 
+    "MFANTSIPIM CUFFLINKS": 150.0,
+    "MFANTSIPIM PIN/LAPEL": 50.0, 
+    "Mfantsipim T-Shirt (Ash)": 150.0,
+    "Mfantsipim T-Shirt (White)": 150.0, 
+    "Mfantsipim T-Shirt (Red)": 150.0,
+    "Mfantsipim Mug": 80.0,  # Added as requested
 }
 
 st.set_page_config(page_title="MOBA Sales Tracker", layout="wide", page_icon="🎓")
@@ -37,7 +46,7 @@ if not df.empty:
 with st.sidebar:
     st.header("📝 Log New Sale")
     
-    # Basic Info
+    # 1. Basic Info
     date = st.date_input("Sales Date", datetime.now())
     buyer = st.text_input("Buyer Name (Optional)")
     year = st.number_input("Year (Optional)", value=0, step=1)
@@ -63,19 +72,17 @@ with st.sidebar:
             "price": ITEM_DATA[item_to_add] * qty_to_add
         })
 
-    # Display Cart & Removal Option
+    # 2. Display Cart & Removal Option
     if st.session_state.cart:
         st.write("---")
         total_price = 0
         summary_parts = []
         
-        # We use a loop with indices to allow deletion
         for i, entry in enumerate(st.session_state.cart):
             c1, c2 = st.columns([4, 1])
             with c1:
-                st.write(f"**{entry['qty']}x** {entry['name']}  \n(GHS {entry['price']})")
+                st.write(f"**{entry['qty']}x** {entry['name']}  \n(GHS {entry['price']:.2f})")
             with c2:
-                # Unique key for each button based on index
                 if st.button("❌", key=f"remove_{i}"):
                     st.session_state.cart.pop(i)
                     st.rerun()
@@ -93,13 +100,17 @@ with st.sidebar:
             disp_buyer = buyer if buyer else "-"
             disp_contact = contact if contact else "-"
             
-            # Row Format
-            entry_string = f"{date.strftime('%d/%m/%Y')},{disp_buyer},{disp_year},{disp_contact},\"{items_combined}\",,,{total_price},{mode}"
+            # DATE FORMAT: DD/MM/YYYY
+            formatted_date = date.strftime('%d/%m/%Y')
+            
+            # Row Format: Date, Buyer, Year, Contact, Item, Price, Qty, Total, Mode
+            entry_string = f"{formatted_date},{disp_buyer},{disp_year},{disp_contact},\"{items_combined}\",,,{total_price},{mode}"
             
             st.subheader("Copy & Paste this row:")
             st.code(entry_string)
             
         if st.button("Clear All", type="secondary"):
+            st.session_state.cart.reset()
             st.session_state.cart = []
             st.rerun()
     else:
