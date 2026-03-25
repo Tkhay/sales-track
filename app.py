@@ -37,7 +37,7 @@ if not df.empty:
 with st.sidebar:
     st.header("📝 Log New Sale")
     
-    # 1. Basic Info (Outside form to preserve state)
+    # Basic Info
     date = st.date_input("Sales Date", datetime.now())
     buyer = st.text_input("Buyer Name (Optional)")
     year = st.number_input("Year (Optional)", value=0, step=1)
@@ -45,7 +45,7 @@ with st.sidebar:
     
     st.divider()
     
-    # 2. Add Items to "Cart"
+    # Cart logic
     if 'cart' not in st.session_state:
         st.session_state.cart = []
 
@@ -56,21 +56,30 @@ with st.sidebar:
     with col2:
         qty_to_add = st.number_input("Qty", min_value=1, value=1)
     
-    if st.button("Add Item"):
+    if st.button("Add Item", width='stretch'):
         st.session_state.cart.append({
             "name": item_to_add,
             "qty": qty_to_add,
             "price": ITEM_DATA[item_to_add] * qty_to_add
         })
 
-    # 3. Display Cart & Finalize
+    # Display Cart & Removal Option
     if st.session_state.cart:
         st.write("---")
         total_price = 0
         summary_parts = []
         
+        # We use a loop with indices to allow deletion
         for i, entry in enumerate(st.session_state.cart):
-            st.write(f"**{entry['qty']}x** {entry['name']} (GHS {entry['price']})")
+            c1, c2 = st.columns([4, 1])
+            with c1:
+                st.write(f"**{entry['qty']}x** {entry['name']}  \n(GHS {entry['price']})")
+            with c2:
+                # Unique key for each button based on index
+                if st.button("❌", key=f"remove_{i}"):
+                    st.session_state.cart.pop(i)
+                    st.rerun()
+            
             total_price += entry['price']
             summary_parts.append(f"{entry['qty']}x {entry['name']}")
         
@@ -78,20 +87,20 @@ with st.sidebar:
         
         mode = st.selectbox("Payment Mode", ["CASH", "MOMO", "TRANSFER"])
         
-        if st.button("Generate Final Row"):
+        if st.button("Generate Final Row", width='stretch'):
             items_combined = " | ".join(summary_parts)
             disp_year = year if year > 0 else ""
             disp_buyer = buyer if buyer else "-"
             disp_contact = contact if contact else "-"
             
-            # Row Format: Date, Buyer, Year, Contact, Item, Price(N/A), Qty(N/A), Total, Mode
+            # Row Format
             entry_string = f"{date.strftime('%d/%m/%Y')},{disp_buyer},{disp_year},{disp_contact},\"{items_combined}\",,,{total_price},{mode}"
             
             st.subheader("Copy & Paste this row:")
             st.code(entry_string)
             
-            if st.button("Clear Cart"):
-                st.session_state.cart = []
-                st.rerun()
+        if st.button("Clear All", type="secondary"):
+            st.session_state.cart = []
+            st.rerun()
     else:
-        st.info("Your cart is empty. Add items above.")
+        st.info("Your cart is empty.")
