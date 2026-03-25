@@ -13,7 +13,7 @@ ITEM_DATA = {
     "MOBA Cloth (General)": 80.0, 
     "MOBA Cloth (Funeral - W&B)": 80.0,
     "MOBA Tie": 200.0, 
-    "MOBA Sticker (RECT-LONG)": 50.0,
+    "MOBA Sticker (RECT-LONG)": 40.0,
     "Mfantsipim Sticker (SQ-SMALL)": 30.0, 
     "Mfantsipim Sticker (SQ-BIG)": 50.0,
     "MFANTSIPIM Pennant": 100.0, 
