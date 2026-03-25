@@ -27,7 +27,8 @@ st.title("📊 MOBA Sales Ledger")
 
 try:
     df = load_data().dropna(how="all").dropna(axis=1, how="all")
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    # Updated to 2026 Streamlit standards
+    st.dataframe(df, width='stretch', hide_index=True)
 except Exception:
     st.error("Connection Error. Check Sheet Sharing settings.")
 
@@ -37,10 +38,7 @@ with st.sidebar:
     with st.form("entry_form", clear_on_submit=True):
         date = st.date_input("Sales Date", datetime.now())
         buyer = st.text_input("Buyer Name (Optional)")
-        
-        # Changed: Removed strict min/max and set default to 0 for "N/A"
         year = st.number_input("Year (Optional)", value=0, step=1)
-        
         contact = st.text_input("Contact (Optional)")
         
         selected_items = st.multiselect("Select Merchandise", list(ITEM_DATA.keys()))
@@ -52,17 +50,15 @@ with st.sidebar:
 
     if submit and selected_items:
         items_combined = " | ".join(selected_items)
-        
-        # Clean up optional fields for the sheet
         disp_year = year if year > 0 else ""
         disp_buyer = buyer if buyer else "-"
         disp_contact = contact if contact else "-"
         
-        # Row Format: Date, Buyer, Year, Contact, Item, Price, Qty, Total, Mode
+        # Row Format for copy-pasting
         entry_string = f"{date.strftime('%d/%m/%Y')},{disp_buyer},{disp_year},{disp_contact},\"{items_combined}\",{subtotal},1,{subtotal},{mode}"
         
         st.subheader("Copy & Paste this row:")
         st.code(entry_string)
-        st.success("Generated! Paste this into your Google Sheet.")
+        st.success("Paste this into your Google Sheet.")
     elif submit and not selected_items:
         st.warning("Please select at least one item.")
