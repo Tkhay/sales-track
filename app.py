@@ -23,7 +23,7 @@ ITEM_DATA = {
     "Mfantsipim T-Shirt (White)": 150.0, 
     "Mfantsipim T-Shirt (Red)": 150.0,
     "Mfantsipim Mug": 80.0,
-    "Air Refreshner": 20.0,
+    "Air Refresher": 20.0,
 }
 
 st.set_page_config(page_title="MOBA Sales Tracker", layout="wide", page_icon="🎓")
